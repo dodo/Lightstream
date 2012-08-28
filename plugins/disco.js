@@ -38,7 +38,7 @@
 
     proto.info = function (to, callback) {
         var id = Lightstring.id("info");
-        this.router.request("iq[@type=result]/info:query[@id='" + id + "']",
+        this.router.request("iq[@type=result and @id='" + id + "']/info:query",
                             {info:NS['disco#info']}, callback);
         this.router.send(new Lightstring.Stanza("iq", {to:to,id:id})
             .c("query", {xmlns:NS['disco#info']}).up());
