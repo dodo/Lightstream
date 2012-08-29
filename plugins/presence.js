@@ -4,7 +4,7 @@
 
     window.Lightstream_Presence = function (router) {
         this.router = router;
-        router.match("presence", this.presence.bind(this));
+        router.match("self::presence", this.presence.bind(this));
     };
     var proto = Lightstream_Ping.prototype;
 

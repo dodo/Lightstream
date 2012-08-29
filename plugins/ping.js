@@ -9,7 +9,7 @@
 
     window.Lightstream_Ping = function (router, disco) {
         this.router = router;
-        router.match("iq/urn:ping", {urn:NS.ping}, this.pong.bind(this));
+        router.match("self::iq/urn:ping", {urn:NS.ping}, this.pong.bind(this));
         if (disco) disco.addFeature(NS.ping);
     };
     Lightstream_Ping.NS = NS;
@@ -17,7 +17,7 @@
 
     proto.ping = function (to, callback) {
         var id = Lightstring.id("ping");
-        this.router.request("iq[@id='" + id + "']", callback);
+        this.router.request("self::iq[@id='" + id + "']", callback);
         this.router.send(new Lightstring.Stanza("iq", {to:to,id:id,type:'get'})
             .c("ping", {xmlns:NS.ping}).up());
     };

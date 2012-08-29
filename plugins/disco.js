@@ -15,7 +15,7 @@
         this.router = router;
         this.identities = identities.slice();
         this.features = features.slice();
-        this.router.match("iq[@type=get]/info:query",
+        this.router.match("self::iq[@type=get]/info:query",
                           {info:NS['disco#info']},
                           this.get_info.bind(this));
     };
@@ -38,8 +38,8 @@
 
     proto.info = function (to, callback) {
         var id = Lightstring.id("info");
-        this.router.request("iq[@type=result and @id='" + id + "']/info:query",
-                            {info:NS['disco#info']}, callback);
+        var xpath = "self::iq[@type=result and @id='" + id + "']/info:query";
+        this.router.request(xpath, {info:NS['disco#info']}, callback);
         this.router.send(new Lightstring.Stanza("iq", {to:to,id:id})
             .c("query", {xmlns:NS['disco#info']}).up());
     };
