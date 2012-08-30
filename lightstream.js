@@ -36,7 +36,7 @@ Lightstream.Router.prototype.send = function (stanza) {
 Lightstream.Router.prototype.request = function (xpath, namespaces, callback) {
     // TODO autogenerate xpath from stanza to be send
     var that = this;
-    if (typeof(namespaces) === 'function') {
+    if (!callback) {
         callback = namespaces;
         namespaces = undefined;
     }
@@ -44,9 +44,8 @@ Lightstream.Router.prototype.request = function (xpath, namespaces, callback) {
         that.xpath.removeListener(xpath, response);
         if (callback) callback("timeout");
     }, Lightstream.timeout);
-    this.xpath.on(xpath, namespaces, function response(stanza) {
+    this.xpath.once(xpath, namespaces, function response(stanza) {
         clearTimeout(timeout);
-        that.xpath.removeListener(xpath, response);
         if (callback) callback(null, stanza);
     });
     return this;
