@@ -1,15 +1,19 @@
-var xmpp = require('node-xmpp');
 var util = require('./util');
 
 var NS = {
     version: 'jabber:iq:version',
 };
 
+// XEP-0092
+
 exports.Version = Version;
-function Version(router, options) {
+function Version(lightstream, options) {
+    this._xmpp = lightstream.xmpp;
+    this.router = lightstream.router;
+    lightstream.registerExtension('version', this);
+    // initialize
     this.identity = {};
     options = this.set(options);
-    this.router = router;
     router.match("self::iq[@type=get]/version:query",
                  {version:NS.version},
                  this.get_version.bind(this));
@@ -40,10 +44,12 @@ proto.fetch = function (to, callback) {
         if (info.features.indexOf(NS.version) === -1)
             return callback("doesnt support " + NS.version + " :(");
     }
-    var xpath = "self::iq[@type=result and @id='"+id+"']/version:query/child::*";
-    this.router.request(xpath,{version:NS.version},this.on_version.bind(this,callback));
-    this.router.send(new xmpp.Iq({from:from,to:to,id:id,type:'get'})
-        .c("query", {xmlns:NS.version}).up());
+    this.router.send(new this._xmpp.Iq({from:from,to:to,id:id,type:'get'})
+        .c("query", {xmlns:NS.version}).up(), {
+        xpath:"self::iq[@type=result and @id='"+id+"']/version:query/child::*",
+        ns:{version:NS.version},
+        callback:this.on_version.bind(this, callback),
+    });
 };
 
 proto.on_version = function (callback, err, stanza, items) {
@@ -63,7 +69,7 @@ proto.on_version = function (callback, err, stanza, items) {
 
 proto.get_version = function (stanza, match) {
     this.router.emit('version', stanza, match);
-    var query = new xmpp.Iq({
+    var query = new this._xmpp.Iq({
         to:stanza.attrs.from,
         id:stanza.attrs.id,
         type:'result',

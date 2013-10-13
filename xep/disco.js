@@ -1,5 +1,4 @@
 var __slice = [].slice;
-var xmpp = require('node-xmpp');
 var extend = require('extend');
 var util = require('./util');
 
@@ -12,10 +11,15 @@ var identities = [];
 
 var features = [NS['disco#info']];
 
+// XEP-0030
+
 exports.Disco = Disco;
-function Disco(router, cache) {
-    this.cache = cache;
-    this.router = router;
+function Disco(lightstream) {
+    this._xmpp = lightstream.xmpp;
+    this.cache = lightstream.cache;
+    this.router = lightstream.router;
+    lightstream.registerExtension('disco', this);
+    // initialize
     this.identities = identities.slice();
     this.features = features.slice();
     this.router.match("self::iq[@type=get]/info:query",
@@ -45,29 +49,30 @@ proto.addIdentity = function (/* identities */) {
 };
 
 proto.info = function (to, callback) {
-    to = typeof(to) === 'string' ? new xmpp.JID(to) : to;
+    to = typeof(to) === 'string' ? new this._xmpp.JID(to) : to;
     if(!to.resource) return; // skip
     var id = util.id("info");
-    var from = this.router.connection.jid;
-    var xpath = "self::iq[@type=result and @id='" + id + "']/info:query";
-    this.router.request(xpath, {info:NS['disco#info']}, function (err, stanza) {
-        if (err) return callback(err, stanza);
-        var query = stanza.getChild("query");
-        var res = {
-            identities:query.getChildren("identity").map(function (i) {return i.attrs}),
-            features:query.getChildren("feature").map(function (f) {return f.attrs.var}),
-        };
-        if (this.cache) this.cache[stanza.attrs.from] =
-                 extend(this.cache[stanza.attrs.from] || {}, res);
-        callback(null, res);
-    }.bind(this));
-    this.router.send(new xmpp.Iq({from:from,to:to,id:id,type:'get'})
-        .c("query", {xmlns:NS['disco#info']}).up());
+    this.router.send(new this._xmpp.Iq({to:to,id:id,type:'get'})
+        .c("query", {xmlns:NS['disco#info']}).up(), {
+        xpath:"self::iq[@type=result and @id='" + id + "']/info:query",
+        ns:{info:NS['disco#info']},
+        callback:function (err, stanza) {
+            if (err) return callback(err, stanza);
+            var query = stanza.getChild("query");
+            var res = {
+                identities:query.getChildren("identity").map(function (i) {return i.attrs}),
+                features:query.getChildren("feature").map(function (f) {return f.attrs.var}),
+            };
+            if (this.cache) this.cache[stanza.attrs.from] =
+                    extend(this.cache[stanza.attrs.from] || {}, res);
+            callback(null, res);
+        }.bind(this),
+    });
 };
 
 proto.get_info = function (stanza, match) {
     this.router.emit('info', stanza, match);
-    var query = new xmpp.Iq({
+    var query = new this._xmpp.Iq({
         from:stanza.attrs.to,
         to:stanza.attrs.from,
         id:stanza.attrs.id,

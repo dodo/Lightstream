@@ -1,6 +1,5 @@
 var EventEmitter = require('events').EventEmitter;
 var inherits = require('inherits');
-var xmpp = require('node-xmpp');
 var util = require('./util');
 
 var NS = {
@@ -12,11 +11,18 @@ var NS = {
 
 var T = ["unavailable","subscribed","unsubscribed","subscribe","unsubscribe"];
 
+// XMPP-Core
+// XEP-0144
+// XEP-0083
+
 exports.Roster = Roster;
 inherits(Roster, EventEmitter);
-function Roster(router, disco) {
+function Roster(lightstream) {
     Roster.super.call(this);
-    this.router = router;
+    this._xmpp = lightstream.xmpp;
+    this.router = lightstream.router;
+    lightstream.registerExtension('roster', this);
+    // initialize
     router.match("self::roster:iq[@type=set]",
                  {roster:NS.roster},
                  this.update_items.bind(this));
@@ -25,7 +31,8 @@ function Roster(router, disco) {
     router.match("self::message/roster:x/item",
                  {roster:NS.rosterx},
                  this.on_message.bind(this));
-    if (disco) disco.addFeature(NS.roster, NS.rosterx);
+    if (lightstream.extension['disco'])
+        lightstream.extension.disco.addFeature(NS.roster, NS.rosterx);
 };
 Roster.NS = NS;
 var proto = Roster.prototype;
@@ -35,12 +42,13 @@ proto.get = function (callback) {
     var id = util.id("roster");
     var id2 = util.id("request:roster");
     var from = this.router.connection.jid;
-    var xpath = "self::iq[@type=result and @id='" + id
-        + "']/roster:query/descendant-or-self::(self::query | self::item)";
-    this.router.request(xpath, {roster:NS.roster},
-                        this.get_roster.bind(this, callback));
     this.router.send(new xmpp.Iq({id:id,type:'get'})
-        .c("query", {xmlns:NS.roster}).up());
+        .c("query", {xmlns:NS.roster}).up(), {
+        xpath:"self::iq[@type=result and @id='" + id +
+              "']/roster:query/descendant-or-self::(self::query | self::item)",
+        ns:{roster:NS.roster},
+        callback:this.get_roster.bind(this, callback),
+    });
 //     this.router.send(new xmpp.Message({from:from,to:from.bare(),id:id2})
 //         .c("x", {xmlns:NS.rosterx}));
 
@@ -48,12 +56,14 @@ proto.get = function (callback) {
 
 proto.getDelimiter = function (callback) {
     var id = util.id("roster:delimiter");
-    var xpath = "self::iq[@type=result and @id='"+id+"']/priv:query/del:roster";
-    this.router.request(xpath, {priv:NS.private,del:NS.delimiter}, callback);
     this.router.send(new xmpp.Iq({id:id,type:'get'})
         .c("query", {xmlns:NS.private})
         .c("roster",{xmlns:NS.delimiter})
-        .up().up());
+        .up().up(), {
+        xpath:"self::iq[@type=result and @id='"+id+"']/priv:query/del:roster",
+        ns:{priv:NS.private,del:NS.delimiter},
+        callback:callback,
+    });
 };
 
 proto.subscribe = function(jid, message) {
