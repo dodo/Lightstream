@@ -12,17 +12,34 @@ exports.xmpp = {
 exports.Lightstream = Lightstream;
 function Lightstream(options) {
     options = options || {};
-    this.backend = options.backend;
-    this.xmpp = extend({}, exports.xmpp);
-    this.connection = this.backend.connection;
-    this.router = new Router(this, options.timeout);
     this.extension = {};
+    this.xmpp = extend({}, exports.xmpp);
+    this.registerBackend(options.backend);
+    this.router = new Router(this, options.timeout);
+    this.onStanza = this.router.onStanza;
 }
+
+Lightstream.prototype.onError = function (err) {
+    console.error(err);
+};
+
+Lightstream.prototype.connect = function (jid, password, options) {
+    options = extend({jid:jid, password:password}, options || {});
+    this.backend.connect(options);
+    return this;
+};
 
 Lightstream.prototype.send = function (stanza) {
     this.backend.send(stanza);
     return this;
 };
+
+Lightstream.prototype.use = function (/*extensions…*/) {
+    Array.prototype.forEach.call(arguments, function (Extension) {
+        new Extension(this); // extension should register itself
+    }.bind(this));
+    return this;
+}
 
 Lightstream.prototype.registerExtension = function (name, extension) {
     if (this.extension[name]) {
@@ -31,3 +48,14 @@ Lightstream.prototype.registerExtension = function (name, extension) {
     }
     return (this.extension[name] = extension);
 };
+
+Lightstream.prototype.registerBackend = function (Backend) {
+    var backend = new Backend(this);
+    this.xmpp.Presence = backend.Presence;
+    this.xmpp.Message = backend.Message;
+    this.xmpp.Stanza = backend.Stanza;
+    this.xmpp.JID = backend.JID;
+    this.xmpp.Iq = backend.Iq;
+    return (this.backend = backend);
+};
+
