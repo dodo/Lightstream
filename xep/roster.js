@@ -23,14 +23,14 @@ function Roster(lightstream) {
     this.router = lightstream.router;
     lightstream.registerExtension('roster', this);
     // initialize
-    router.match("self::roster:iq[@type=set]",
-                 {roster:NS.roster},
-                 this.update_items.bind(this));
-    router.match("self::presence[@type="+T.join(" or @type=")+" or not(@type)]",
-                 this.update_presence.bind(this));
-    router.match("self::message/roster:x/item",
-                 {roster:NS.rosterx},
-                 this.on_message.bind(this));
+    this.router.match("self::roster:iq[@type=set]",
+                      {roster:NS.roster},
+                      this.update_items.bind(this));
+    this.router.match("self::presence[@type="+T.join(" or @type=")+" or not(@type)]",
+                      this.update_presence.bind(this));
+    this.router.match("self::message/roster:x/item",
+                      {roster:NS.rosterx},
+                      this.on_message.bind(this));
     if (lightstream.extension['disco'])
         lightstream.extension.disco.addFeature(NS.roster, NS.rosterx);
 };

@@ -7,7 +7,7 @@ function Presence(lightstream) {
     this.router = lightstream.router;
     lightstream.registerExtension('presence', this);
     // initialize
-    router.match("self::presence", this.presence.bind(this));
+    this.router.match("self::presence", this.presence.bind(this));
 };
 
 var proto = Presence.prototype;

@@ -12,7 +12,7 @@ function Ping(lightstream) {
     this.router = lightstream.router;
     lightstream.registerExtension('ping', this);
     // initialize
-    router.match("self::iq/urn:ping", {urn:NS.ping}, this.pong.bind(this));
+    this.router.match("self::iq/urn:ping", {urn:NS.ping}, this.pong.bind(this));
     if (lightstream.extension['disco'])
         lightstream.extension.disco.addFeature(NS.ping);
 };

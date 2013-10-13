@@ -14,7 +14,7 @@ function Version(lightstream, options) {
     // initialize
     this.identity = {};
     options = this.set(options);
-    router.match("self::iq[@type=get]/version:query",
+    this.router.match("self::iq[@type=get]/version:query",
                  {version:NS.version},
                  this.get_version.bind(this));
     if (options.disco) {
