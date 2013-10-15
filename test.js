@@ -1,7 +1,7 @@
 var Lightstream = require('./lightstream').Lightstream;
 var xep = require('./xep');
 
-if (argv.length != 4) {
+if (process.argv.length != 4) {
     console.error('Usage: node test.js <my-jid> <my-password>');
     process.exit(1);
 }
