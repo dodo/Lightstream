@@ -6,6 +6,7 @@ var NS = {
     vcard: 'vcard-temp',
     update: 'vcard-temp:x:update',
 };
+exports.NS = NS;
 
 exports.VCard = VCard;
 inherits(VCard, EventEmitter);

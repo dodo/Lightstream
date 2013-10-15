@@ -8,6 +8,7 @@ var NS = {
     private:'jabber:iq:private',
     delimiter:'roster:delimiter',
 };
+exports.NS = NS;
 
 var T = ["unavailable","subscribed","unsubscribed","subscribe","unsubscribe"];
 

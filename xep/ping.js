@@ -3,6 +3,7 @@ var util = require('./util');
 var NS = {
     ping: 'urn:xmpp:ping',
 };
+exports.NS = NS;
 
 // XEP-0199
 

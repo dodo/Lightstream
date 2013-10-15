@@ -6,6 +6,7 @@ var NS = {
     'disco#info': "http://jabber.org/protocol/disco#info",
     'disco#items': "http://jabber.org/protocol/disco#items",
 };
+exports.NS = NS;
 
 var identities = [];
 
@@ -28,7 +29,6 @@ function Disco(lightstream) {
 };
 Disco.identities = identities;
 Disco.features = features;
-Disco.NS = NS;
 var proto = Disco.prototype;
 
 proto.clearCache = function () {

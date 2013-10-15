@@ -3,6 +3,7 @@ var util = require('./util');
 var NS = {
     version: 'jabber:iq:version',
 };
+exports.NS = NS;
 
 // XEP-0092
 
@@ -23,7 +24,6 @@ function Version(lightstream, options) {
         this.disco.addFeature(NS.version);
     }
 };
-Version.NS = NS;
 var proto = Version.prototype;
 
 proto.set = function (options) {

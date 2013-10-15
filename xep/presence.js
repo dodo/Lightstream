@@ -1,4 +1,6 @@
 
+exports.NS = {};
+
 // XMPP-Core
 
 exports.Presence = Presence;
