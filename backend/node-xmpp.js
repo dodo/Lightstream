@@ -20,6 +20,12 @@ NodeXmppBackend.prototype.connect = function (options) {
     return this;
 };
 
+NodeXmppBackend.prototype.disconnect = function (options) {
+    if (this.client) this.client.end();
+    delete this.client;
+    return this;
+};
+
 NodeXmppBackend.prototype.send = function (stanza) {
     if (this.client) this.client.send(stanza);
     return this;

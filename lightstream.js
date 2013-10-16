@@ -29,6 +29,11 @@ Lightstream.prototype.connect = function (jid, password, options) {
     return this;
 };
 
+Lightstream.prototype.disconnect = function (options) {
+    this.backend.disconnect(options);
+    return this;
+};
+
 Lightstream.prototype.send = function (stanza) {
     this.backend.send(stanza);
     return this;
