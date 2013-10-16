@@ -1,9 +1,9 @@
+var xmpp;
 
 module.exports = NodeXmppBackend;
 exports.NodeXmppBackend = NodeXmppBackend;
 function NodeXmppBackend(frontend) {
-    var xmpp = require('node-xmpp');
-    this.xmpp = xmpp;
+    xmpp = xmpp || require('node-xmpp');
     this.frontend = frontend;
     this.Presence = xmpp.Presence;
     this.Message = xmpp.Message;
@@ -15,7 +15,7 @@ var proto = NodeXmppBackend.prototype
 
 proto.connect = function (options) {
     if (this.client) return this;
-    this.client = new this.xmpp.Client(options);
+    this.client = new xmpp.Client(options);
     this.client.on('stanza', this.frontend.onStanza);
     this.client.on('error',  this.frontend.onError);
     return this;
