@@ -15,7 +15,13 @@ var proto = NodeXmppBackend.prototype
 
 proto.connect = function (options) {
     if (this.client) return this;
-    this.client = new xmpp.Client(options);
+    var client = this.client = new xmpp.Client(options);
+    // FIXME
+    Object.defineProperty(this.frontend.router, 'jid', {
+        get: function() {
+            return client.jid;
+        }
+    });
     this.client.on('stanza', this.frontend.onStanza);
     this.client.on('error',  this.frontend.onError);
     // FIXME add more eventhandlers to lightstream

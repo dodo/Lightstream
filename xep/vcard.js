@@ -42,7 +42,7 @@ proto.get = function (to, callback) {
     var id = util.id("vcard:get");
     if (to && typeof(to) === 'string') to = new this._xmpp.JID(to);
     if (to) to = to.bare();
-    this.router.send(new this._xmpp.Iq({to:to,id:id,type:'get',from:this.router.connection.jid})
+    this.router.send(new this._xmpp.Iq({to:to,id:id,type:'get',from:this.router.jid})
         .c("vCard", {xmlns:NS.vcard}).up(), {
         xpath:"self::iq[@id='" + id + "']/vc:vCard/child::* | " +
               "self::iq[@id='" + id + "' and @type=error]/error/child::*",
@@ -60,7 +60,7 @@ proto.set = function (to, vcard, callback) {
     if (!callback) {callback = vcard; vcard = undefined;}
     var id = util.id("vcard:set");
     if (to) to = (new this._xmpp.JID(to)).bare();
-    var iq = new this._xmpp.Iq({to:to,id:id,type:'set',from:this.router.connection.jid})
+    var iq = new this._xmpp.Iq({to:to,id:id,type:'set',from:this.router.jid})
         .c("vCard", {xmlns:NS.vcard}).up();
     if (vcard) iq.cnode(vcard);
     this.router.send(iq, callback);

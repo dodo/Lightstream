@@ -42,7 +42,7 @@ var proto = Roster.prototype;
 proto.get = function (callback) {
     var id = util.id("roster");
     var id2 = util.id("request:roster");
-    var from = this.router.connection.jid;
+    var from = this.router.jid;
     this.router.send(new xmpp.Iq({id:id,type:'get'})
         .c("query", {xmlns:NS.roster}).up(), {
         xpath:"self::iq[@type=result and @id='" + id +

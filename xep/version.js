@@ -38,7 +38,7 @@ proto.set = function (options) {
 
 proto.fetch = function (to, callback) {
     var id = util.id("version");
-    var from = this.router.connection.jid;
+    var from = this.router.jid;
     if (this.disco && this.disco.cache && this.disco.cache[to]) {
         var info = this.disco.cache[to];
         if (info.features.indexOf(NS.version) === -1)
