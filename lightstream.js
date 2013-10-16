@@ -15,6 +15,7 @@ Lightstream.Lightstream = Lightstream;
 function Lightstream(options) {
     options = options || {};
     this.extension = {};
+    this.cache = options.cache;
     this.xmpp = extend({}, Lightstream.xmpp);
     this.registerBackend(options.backend);
     this.router = new Router(this, options.timeout);
