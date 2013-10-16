@@ -29,7 +29,6 @@ function VCard(lightstream) {
         presence.c("x", {xmlns:NS.update}).c("photo", this.hash);
     }.bind(this));
 };
-VCard.NS = NS;
 var proto = VCard.prototype;
 
 proto.setPhotoHash = function (hash) {

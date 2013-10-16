@@ -11,8 +11,9 @@ function NodeXmppBackend(frontend) {
     this.JID = xmpp.JID;
     this.Iq = xmpp.Iq;
 }
+var proto = NodeXmppBackend.prototype
 
-NodeXmppBackend.prototype.connect = function (options) {
+proto.connect = function (options) {
     if (this.client) return this;
     this.client = new this.xmpp.Client(options);
     this.client.on('stanza', this.frontend.onStanza);
@@ -20,13 +21,13 @@ NodeXmppBackend.prototype.connect = function (options) {
     return this;
 };
 
-NodeXmppBackend.prototype.disconnect = function (options) {
+proto.disconnect = function (options) {
     if (this.client) this.client.end();
     delete this.client;
     return this;
 };
 
-NodeXmppBackend.prototype.send = function (stanza) {
+proto.send = function (stanza) {
     if (this.client) this.client.send(stanza);
     return this;
 };
