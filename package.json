@@ -8,7 +8,6 @@
   },
   "dependencies": {
       "extend": "*",
-      "inherits": "*",
       "ltx-xpath":"*"
   },
   "repository": "",

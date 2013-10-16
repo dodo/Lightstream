@@ -1,5 +1,5 @@
 var EventEmitter = require('events').EventEmitter;
-var inherits = require('inherits');
+var inherits = require('util').inherits;
 var util = require('./util');
 
 var NS = {
@@ -11,7 +11,7 @@ exports.NS = NS;
 exports.VCard = VCard;
 inherits(VCard, EventEmitter);
 function VCard(lightstream) {
-    VCard.super.call(this);
+    VCard.super_.call(this);
     this._xmpp = lightstream.xmpp;
     this.router = lightstream.router;
     lightstream.registerExtension('vcard', this);

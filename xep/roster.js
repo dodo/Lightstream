@@ -1,5 +1,5 @@
 var EventEmitter = require('events').EventEmitter;
-var inherits = require('inherits');
+var inherits = require('util').inherits;
 var util = require('./util');
 
 var NS = {
@@ -19,7 +19,7 @@ var T = ["unavailable","subscribed","unsubscribed","subscribe","unsubscribe"];
 exports.Roster = Roster;
 inherits(Roster, EventEmitter);
 function Roster(lightstream) {
-    Roster.super.call(this);
+    Roster.super_.call(this);
     this._xmpp = lightstream.xmpp;
     this.router = lightstream.router;
     lightstream.registerExtension('roster', this);
