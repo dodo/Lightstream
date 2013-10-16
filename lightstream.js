@@ -1,7 +1,8 @@
 var extend = require('extend');
 var Router = require('./lib/router').Router;
 
-exports.xmpp = {
+
+Lightstream.xmpp = {
     Presence: function () {throw Error("no backend loaded!")},
     Message: function () {throw Error("no backend loaded!")},
     Stanza: function () {throw Error("no backend loaded!")},
@@ -9,11 +10,12 @@ exports.xmpp = {
     Iq: function () {throw Error("no backend loaded!")},
 };
 
-exports.Lightstream = Lightstream;
+module.exports = Lightstream;
+Lightstream.Lightstream = Lightstream;
 function Lightstream(options) {
     options = options || {};
     this.extension = {};
-    this.xmpp = extend({}, exports.xmpp);
+    this.xmpp = extend({}, Lightstream.xmpp);
     this.registerBackend(options.backend);
     this.router = new Router(this, options.timeout);
     this.onStanza = this.router.onStanza;
