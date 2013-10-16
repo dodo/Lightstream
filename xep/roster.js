@@ -43,7 +43,7 @@ proto.get = function (callback) {
     var id = util.id("roster");
     var id2 = util.id("request:roster");
     var from = this.router.jid;
-    this.router.send(new xmpp.Iq({id:id,type:'get'})
+    this.router.send(new this._xmpp.Iq({id:id,type:'get'})
         .c("query", {xmlns:NS.roster}).up(), {
         xpath:"self::iq[@type=result and @id='" + id +
               "']/roster:query/descendant-or-self::(self::query | self::item)",
@@ -57,7 +57,7 @@ proto.get = function (callback) {
 
 proto.getDelimiter = function (callback) {
     var id = util.id("roster:delimiter");
-    this.router.send(new xmpp.Iq({id:id,type:'get'})
+    this.router.send(new this._xmpp.Iq({id:id,type:'get'})
         .c("query", {xmlns:NS.private})
         .c("roster",{xmlns:NS.delimiter})
         .up().up(), {
@@ -68,25 +68,25 @@ proto.getDelimiter = function (callback) {
 };
 
 proto.subscribe = function(jid, message) {
-    var pres = new xmpp.Presence({to:jid, type:'subscribe'});
+    var pres = new this._xmpp.Presence({to:jid, type:'subscribe'});
     if (message && message != "") pres.c("status").t(message);
     this.router.send(pres);
 };
 
 proto.unsubscribe = function(jid, message) {
-    var pres = new xmpp.Presence({to:jid, type:'unsubscribe'});
+    var pres = new this._xmpp.Presence({to:jid, type:'unsubscribe'});
     if (message && message != "") pres.c("status").t(message);
     this.router.send(pres);
 };
 
 proto.authorize = function(jid, message) {
-    var pres = new xmpp.Presence({to:jid, type:'subscribed'});
+    var pres = new this._xmpp.Presence({to:jid, type:'subscribed'});
     if (message && message != "") pres.c("status").t(message);
     this.router.send(pres);
 };
 
 proto.unauthorize = function(jid, message) {
-    var pres = new xmpp.Presence({to:jid, type:'unsubscribed'});
+    var pres = new this._xmpp.Presence({to:jid, type:'unsubscribed'});
     if (message && message != "") pres.c("status").t(message);
     this.router.send(pres);
 };
@@ -139,7 +139,7 @@ proto.update_presence = function (stanza) {
         case undefined: event = "online"; break;
         default: break;
     }
-    if (event) this.emit(event, new xmpp.JID(stanza.attrs.from), stanza);
+    if (event) this.emit(event, new this._xmpp.JID(stanza.attrs.from), stanza);
 };
 
 proto.on_message = function (stanza, items) {
