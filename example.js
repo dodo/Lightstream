@@ -12,20 +12,20 @@ var lightstream = new Lightstream({
   .connect(process.argv[2], process.argv[3]);
 
 
-lightstream.router.on('ping', function (stanza) {
+lightstream.on('ping', function (stanza) {
    console.log("received a ping", stanza);
 });
 
-lightstream.router.on('info', function (stanza) {
+lightstream.on('info', function (stanza) {
    console.log("received a info disco query", stanza);
 });
 
-lightstream.router.on('presence', function (stanza) {
+lightstream.on('presence', function (stanza) {
    console.log("received a presence", stanza);
 });
 
 
-lightstream.backend.client.on('online', function () {
+lightstream.on('online', function () {
     console.log("online");
     lightstream.extension.presence.send({
         show:"chat",
