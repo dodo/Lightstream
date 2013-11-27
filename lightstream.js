@@ -1,7 +1,7 @@
 var EventEmitter = require('events').EventEmitter;
 var inherits = require('util').inherits;
 var extend = require('extend');
-var Router = require('./lib/router').Router;
+var Router = require('./router').Router;
 
 
 Lightstream.xmpp = {
