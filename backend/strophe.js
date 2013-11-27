@@ -25,6 +25,7 @@ proto.connect = function (options) {
     this.connection.xmlInput = this.frontend.onStanza; // FIXME onStanza should only eat ltx style elements
     this.connection.error = this.frontend.onError;
     this.connection.fatal = this.frontend.onError;
+    // FIXME add more eventhandlers to lightstream
     this.connection.connect(options.jid, options.password, this.onState.bind(this));
     return this;
 };

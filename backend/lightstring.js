@@ -19,7 +19,10 @@ proto.connect = function (options) {
     this.connection = new xmpp.Connection(options.url);
     this.connection.onStanza = this.frontend.onStanza;
     this.connection.onError  = this.frontend.onError;
-    // FIXME add more eventhandlers to lightstream
+    this.connection.onFailure= this.frontend.onError;
+    this.connection.onClose  = this.frontend.emit.bind(this.frontend, 'end');
+    this.connection.onConnected = this.frontend.emit.bind(this.frontend, 'online');
+    this.connection.onDisconnecting = this.frontend.emit.bind(this.frontend, 'offline');
     this.connection.connect(options.jid, options.password);
     return this;
 };
