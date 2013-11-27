@@ -27,7 +27,7 @@ proto.connect = function (options) {
     this.client.on('stanza', this.frontend.onStanza);
     this.client.on('error',  this.frontend.onError);
     ['online','offline','end'].forEach(function (event) {
-        client.on('event', this.frontend.emit.bind(this.frontend, event));
+        client.on(event, this.frontend.emit.bind(this.frontend, event));
     });
     return this;
 };
