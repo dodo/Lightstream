@@ -17,17 +17,18 @@ var proto = NodeXmppBackend.prototype
 
 proto.connect = function (options) {
     if (this.client) return this;
+    var frontend = this.frontend;
     var client = this.client = new xmpp.Client(options);
     // FIXME
-    Object.defineProperty(this.frontend.router, 'jid', {
+    Object.defineProperty(frontend.router, 'jid', {
         get: function() {
             return client.jid;
         }
     });
-    this.client.on('stanza', this.frontend.onStanza);
-    this.client.on('error',  this.frontend.onError);
+    client.on('stanza', frontend.onStanza);
+    client.on('error',  frontend.onError);
     ['online','offline','end'].forEach(function (event) {
-        client.on(event, this.frontend.emit.bind(this.frontend, event));
+        client.on(event, frontend.emit.bind(frontend, event));
     });
     return this;
 };
