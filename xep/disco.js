@@ -19,6 +19,7 @@ function Disco(lightstream) {
     this._xmpp = lightstream.xmpp;
     this.cache = lightstream.cache;
     this.router = lightstream.router;
+    this._emit = lightstream.emit.bind(lightstream);
     lightstream.registerExtension('disco', this);
     // initialize
     this.identities = identities.slice();
@@ -71,7 +72,7 @@ proto.info = function (to, callback) {
 };
 
 proto.get_info = function (stanza, match) {
-    this.router.emit('info', stanza, match);
+    this._emit('info', stanza, match);
     var query = new this._xmpp.Iq({
         from:stanza.attrs.to,
         to:stanza.attrs.from,

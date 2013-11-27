@@ -1,3 +1,5 @@
+var EventEmitter = require('events').EventEmitter;
+var inherits = require('util').inherits;
 var extend = require('extend');
 var Router = require('./lib/router').Router;
 
@@ -12,7 +14,9 @@ Lightstream.xmpp = {
 
 module.exports = Lightstream;
 Lightstream.Lightstream = Lightstream;
+inherits(Lightstream, EventEmitter);
 function Lightstream(options) {
+    Lightstream.super_.call(this);
     options = options || {};
     this.extension = {};
     this.cache = options.cache;
@@ -20,12 +24,10 @@ function Lightstream(options) {
     this.registerBackend(options.backend);
     this.router = new Router(this, options.timeout);
     this.onStanza = this.router.onStanza;
+    this.onError = this.emit.bind(this, 'error');
 }
 var proto = Lightstream.prototype;
 
-proto.onError = function (err) {
-    console.error(err);
-};
 
 proto.connect = function (jid, password, options) {
     options = extend({jid:jid, password:password}, options || {});

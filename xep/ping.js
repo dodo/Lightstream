@@ -11,6 +11,7 @@ exports.Ping = Ping;
 function Ping(lightstream) {
     this._xmpp = lightstream.xmpp;
     this.router = lightstream.router;
+    this._emit = lightstream.emit.bind(lightstream);
     lightstream.registerExtension('ping', this);
     // initialize
     this.router.match("self::iq/urn:ping", {urn:NS.ping}, this.pong.bind(this));
@@ -26,7 +27,7 @@ proto.ping = function (to, callback) {
 };
 
 proto.pong = function (stanza, match) {
-    this.router.emit('ping', stanza, match);
+    this._emit('ping', stanza, match);
     this.router.send(new this._xmpp.Iq({
         to:stanza.attrs.from,
         id:stanza.attrs.id,

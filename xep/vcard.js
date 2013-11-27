@@ -14,6 +14,7 @@ function VCard(lightstream) {
     VCard.super_.call(this);
     this._xmpp = lightstream.xmpp;
     this.router = lightstream.router;
+    this._emit = lightstream.emit.bind(lightstream);
     lightstream.registerExtension('vcard', this);
     // initialize
     this.on('newListener', onlistener);
@@ -67,5 +68,5 @@ proto.set = function (to, vcard, callback) {
 };
 
 proto.presence = function (stanza) {
-    this.router.emit('presence', stanza);
+    this._emit('presence', stanza);
 };

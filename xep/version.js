@@ -11,6 +11,7 @@ exports.Version = Version;
 function Version(lightstream, options) {
     this._xmpp = lightstream.xmpp;
     this.router = lightstream.router;
+    this._emit = lightstream.emit.bind(lightstream);
     lightstream.registerExtension('version', this);
     // initialize
     this.identity = {};
@@ -68,7 +69,7 @@ proto.on_version = function (callback, err, stanza, items) {
 };
 
 proto.get_version = function (stanza, match) {
-    this.router.emit('version', stanza, match);
+    this._emit('version', stanza, match);
     var query = new this._xmpp.Iq({
         to:stanza.attrs.from,
         id:stanza.attrs.id,

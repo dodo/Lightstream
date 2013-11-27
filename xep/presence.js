@@ -7,6 +7,7 @@ exports.Presence = Presence;
 function Presence(lightstream) {
     this._xmpp = lightstream.xmpp;
     this.router = lightstream.router;
+    this._emit = lightstream.emit.bind(lightstream);
     lightstream.registerExtension('presence', this);
     // initialize
     this.router.match("self::presence", this.presence.bind(this));
@@ -25,7 +26,7 @@ proto.send = function (opts) {
         });
         if (opts.payload) presence.t(opts.payload);
     }
-    this.router.emit('send presence', presence);
+    this._emit('send presence', presence);
     console.log("presenceOUT", ""+presence)
     this.router.send(presence);
     return this;
@@ -41,5 +42,5 @@ proto.probe = function (to) {
 
 proto.presence = function (stanza) {
     console.log("presenceIN", ""+stanza)
-    this.router.emit('presence', stanza);
+    this._emit('presence', stanza);
 };
