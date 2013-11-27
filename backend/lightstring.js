@@ -1,3 +1,4 @@
+// Dependency: https://github.com/sonnyp/lightstring
 var xmpp = window.lightstring;
 
 module.exports = LightstringBackend;

@@ -1,3 +1,4 @@
+// Dependency: npm install node-xmpp-core node-xmpp-client
 var xmpp;
 
 module.exports = NodeXmppBackend;

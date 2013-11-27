@@ -1,3 +1,4 @@
+// Dependency: https://github.com/strophe/strophejs
 // TODO
 var xmpp = window.Strophe;
 
