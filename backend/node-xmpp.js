@@ -3,7 +3,8 @@ var xmpp;
 module.exports = NodeXmppBackend;
 exports.NodeXmppBackend = NodeXmppBackend;
 function NodeXmppBackend(frontend) {
-    xmpp = xmpp || require('node-xmpp');
+    xmpp = xmpp || require('node-xmpp-core');
+    xmpp.Client = xmpp.Client || require('node-xmpp-client');
     this.frontend = frontend;
     this.Presence = xmpp.Presence;
     this.Message = xmpp.Message;
