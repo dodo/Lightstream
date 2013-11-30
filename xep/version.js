@@ -8,19 +8,19 @@ exports.NS = NS;
 // XEP-0092
 
 exports.Version = Version;
-function Version(lightstream, options) {
+function Version(lightstream) {
     this._xmpp = lightstream.xmpp;
     this.router = lightstream.router;
     this._emit = lightstream.emit.bind(lightstream);
     lightstream.registerExtension('version', this);
     // initialize
     this.identity = {};
-    options = this.set(options);
+    this.set();
     this.router.match("self::iq[@type=get]/version:query",
                  {version:NS.version},
                  this.get_version.bind(this));
-    if (options.disco) {
-        this.disco = options.disco;
+    if (lightstream.extension['disco']) {
+        this.disco = lightstream.extension['disco'];
         this.disco.addIdentity(this.identity);
         this.disco.addFeature(NS.version);
     }
