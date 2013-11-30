@@ -8,6 +8,9 @@ var NS = {
 };
 exports.NS = NS;
 
+// XEP-0054
+// XEP-0153
+
 exports.VCard = VCard;
 inherits(VCard, EventEmitter);
 function VCard(lightstream) {
