@@ -1,4 +1,3 @@
-
 # [lightstream](https://github.com/dodo/lightstream)
 
 This module trys to implement the xmpp protocol and expose it as javascript functions.
@@ -142,3 +141,5 @@ If you notice that you don't get any stanza with your xpath, a reason for that A
  - implement more xpath features in ltx-xpath
  - document each xep
 
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/dodo/lightstream/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
