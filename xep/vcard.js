@@ -1,5 +1,6 @@
 var EventEmitter = require('events').EventEmitter;
 var inherits = require('util').inherits;
+var debug = require('debug')('ls:xep:vcard');
 var util = require('./util');
 
 var NS = {
@@ -37,11 +38,12 @@ var proto = VCard.prototype;
 
 proto.setPhotoHash = function (hash) {
     this.hash = hash;
-    console.error("set hash", hash)
+    debug("set hash: " + hash)
     return this;
 };
 
 proto.get = function (to, callback) {
+    debug('get');
     if (!callback) {callback = to; to = undefined;}
     var id = util.id("vcard:get");
     if (to && typeof(to) === 'string') to = new this._xmpp.JID(to);
@@ -54,12 +56,14 @@ proto.get = function (to, callback) {
         callback:function (err, stanza, match) {
             if (!err && stanza.attrs.type === "error")
                 err = "error:" + (match[0]&&match[0].name);
+            debug('got ' + (err||'vcard'));
             return callback(err, stanza, match);
         },
     });
 };
 
 proto.set = function (to, vcard, callback) {
+    debug('set');
     if (!callback) {callback = vcard; vcard = to; to = undefined;}
     if (!callback) {callback = vcard; vcard = undefined;}
     var id = util.id("vcard:set");

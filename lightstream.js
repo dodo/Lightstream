@@ -1,5 +1,6 @@
 var EventEmitter = require('events').EventEmitter;
 var inherits = require('util').inherits;
+var debug = require('debug')('ls:client');
 var extend = require('extend');
 var Router = require('./router').Router;
 
@@ -30,12 +31,14 @@ var proto = Lightstream.prototype;
 
 
 proto.connect = function (jid, password, options) {
+    debug('connect');
     options = extend({jid:jid, password:password}, options || {});
     this.backend.connect(options);
     return this;
 };
 
 proto.disconnect = function (options) {
+    debug('disconnect');
     this.backend.disconnect(options);
     return this;
 };
@@ -49,12 +52,14 @@ proto.send = function (stanza) {
 
 proto.use = function (/*extensions…*/) {
     Array.prototype.forEach.call(arguments, function (Extension) {
+        debug('use ' + Extension.name);
         new Extension(this); // extension should register itself
     }.bind(this));
     return this;
 }
 
 proto.registerExtension = function (name, extension) {
+    debug('register ' + name);
     if (this.extension[name]) {
         console.warn("Extension '%s' exists allready.", name);
         return this;
@@ -63,6 +68,7 @@ proto.registerExtension = function (name, extension) {
 };
 
 proto.registerBackend = function (Backend) {
+    debug('capsule ' + Backend.name);
     var backend = new Backend(this);
     this.xmpp.Presence = backend.Presence;
     this.xmpp.Message = backend.Message;

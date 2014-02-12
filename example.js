@@ -36,6 +36,7 @@ lightstream.on('online', function () {
 
 lightstream.router.match("self::message", function (stanza) {
     if (stanza.attrs.type === 'error') return; // never reply to errors
+    console.log(stanza.toString())
     // Swap addresses...
     stanza.attrs.to = stanza.attrs.from;
     delete stanza.attrs.from;

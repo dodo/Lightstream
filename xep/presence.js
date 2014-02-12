@@ -1,3 +1,4 @@
+var debug = require('debug')('ls:xep:presence');
 
 exports.NS = {};
 
@@ -27,7 +28,7 @@ proto.send = function (opts) {
         if (opts.payload) presence.t(opts.payload);
     }
     this._emit('send presence', presence);
-    console.log("presenceOUT", ""+presence)
+    debug("presence out: "+presence)
     this.router.send(presence);
     return this;
 };
@@ -41,6 +42,6 @@ proto.probe = function (to) {
 }
 
 proto.presence = function (stanza) {
-    console.log("presenceIN", ""+stanza)
+    debug("presence in: "+stanza)
     this._emit('presence', stanza);
 };

@@ -1,4 +1,5 @@
 var EventEmitter = require('events').EventEmitter;
+var debug = require('debug')('ls:xep:roster');
 var inherits = require('util').inherits;
 var util = require('./util');
 
@@ -40,6 +41,7 @@ var proto = Roster.prototype;
 
 
 proto.get = function (callback) {
+    debug('fetch roster');
     var id = util.id("roster");
     var id2 = util.id("request:roster");
     var from = this.router.jid;
@@ -68,24 +70,28 @@ proto.getDelimiter = function (callback) {
 };
 
 proto.subscribe = function(jid, message) {
+    debug('subscribe ' + jid);
     var pres = new this._xmpp.Presence({to:jid, type:'subscribe'});
     if (message && message != "") pres.c("status").t(message);
     this.router.send(pres);
 };
 
 proto.unsubscribe = function(jid, message) {
+    debug('unsubscribe ' + jid);
     var pres = new this._xmpp.Presence({to:jid, type:'unsubscribe'});
     if (message && message != "") pres.c("status").t(message);
     this.router.send(pres);
 };
 
 proto.authorize = function(jid, message) {
+    debug('authorize ' + jid);
     var pres = new this._xmpp.Presence({to:jid, type:'subscribed'});
     if (message && message != "") pres.c("status").t(message);
     this.router.send(pres);
 };
 
 proto.unauthorize = function(jid, message) {
+    debug('unauthorize ' + jid);
     var pres = new this._xmpp.Presence({to:jid, type:'unsubscribed'});
     if (message && message != "") pres.c("status").t(message);
     this.router.send(pres);
@@ -94,6 +100,7 @@ proto.unauthorize = function(jid, message) {
 
 proto.get_roster = function (callback, err, stanza, match) {
     if (err || !match.length) return this.emit('error', err, stanza);
+    debug('get roster');
     var needdelimiter = false;
     if (match[0].is('query')) return;
     var items = []; match.forEach(function (item) {
@@ -112,6 +119,7 @@ proto.get_roster = function (callback, err, stanza, match) {
     this.getDelimiter(function (err, stanza, match) {
         if (err || !match.length) return callback(items);
         var delimiter = match[0].getText();
+        debug('send roster')
         return callback(items.map(function (item) {
             item.groups = item.groups.map(function (path) {
                 return delimiter ? path.split(delimiter) : [path];
@@ -123,12 +131,12 @@ proto.get_roster = function (callback, err, stanza, match) {
 };
 
 proto.update_items = function (stanza, match) {
-    console.log("update_items", stanza.toString(), match.toString());
+    debug("update_items: " + stanza.toString() + " " + match.toString());
 };
 
 proto.update_presence = function (stanza) {
-//     console.error("update_presence", stanza.toString());
-    console.error("update_presence", stanza.attrs.type);
+//     debug("update_presence: " + stanza.toString());
+    debug("update_presence: " + stanza.attrs.type);
     var event;
     switch(stanza.attrs.type) {
         case "unavailable":  event = "offline"; break;
@@ -143,6 +151,6 @@ proto.update_presence = function (stanza) {
 };
 
 proto.on_message = function (stanza, items) {
-    console.log("on_message", stanza.toString(), items.toString());
+    debug("on_message: " + stanza.toString() + " " + items.toString());
 };
 

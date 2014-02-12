@@ -1,3 +1,4 @@
+var debug = require('debug')('ls:xep:ping');
 var util = require('./util');
 
 var NS = {
@@ -22,11 +23,13 @@ Ping.NS = NS;
 var proto = Ping.prototype;
 
 proto.ping = function (to, callback) {
+    debug('ping');
     this.router.send(new this._xmpp.Iq({to:to,id:util.id("ping"),type:'get'})
         .c("ping", {xmlns:NS.ping}).up(), callback);
 };
 
 proto.pong = function (stanza, match) {
+    debug('pong');
     this._emit('ping', stanza, match);
     this.router.send(new this._xmpp.Iq({
         to:stanza.attrs.from,

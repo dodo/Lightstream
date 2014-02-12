@@ -1,4 +1,6 @@
 var __slice = [].slice;
+var inspect = require('util').inspect;
+var debug = require('debug')('ls:xep:disco');
 var extend = require('extend');
 var util = require('./util');
 
@@ -33,17 +35,20 @@ Disco.features = features;
 var proto = Disco.prototype;
 
 proto.clearCache = function () {
+    debug('clear cache');
     this.cache = {};
     return this;
 };
 
 proto.addFeature = function (/* features… */) {
+    debug("addFeature: " + inspect(__slice.call(arguments)));
     this.features.splice.apply(this.features,
         [this.features.length, 0].concat(__slice.call(arguments)));
     return this;
 };
 
 proto.addIdentity = function (/* identities */) {
+    debug("addIdentity: " + inspect(__slice.call(arguments)));
     this.identities.splice.apply(this.identities,
         [this.identities.length, 0].concat(__slice.call(arguments)));
     return this;
@@ -72,6 +77,7 @@ proto.info = function (to, callback) {
 };
 
 proto.get_info = function (stanza, match) {
+    debug('got info');
     this._emit('info', stanza, match);
     var query = new this._xmpp.Iq({
         from:stanza.attrs.to,

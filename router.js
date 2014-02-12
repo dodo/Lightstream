@@ -1,6 +1,7 @@
 var __slice = [].slice;
 var EventEmitter = require('events').EventEmitter;
 var inherits = require('util').inherits;
+var debug = require('debug')('ls:router');
 var ltxXPath = require('ltx-xpath').XPath;
 
 
@@ -44,6 +45,7 @@ proto.send = function (stanza/*[*/, options) {
 };
 
 proto.request = function (xpath/*[*/, namespaces/*]*/, callback) {
+    debug('request');
     var stanza;
     if (!callback) {
         callback = namespaces;
@@ -54,6 +56,7 @@ proto.request = function (xpath/*[*/, namespaces/*]*/, callback) {
         namespaces = undefined;
     }
     var timeout = setTimeout(function () {
+        debug("timeout");
         if (xpath) {
             this.xpath.removeListener(xpath, response);
         } else {
@@ -84,6 +87,7 @@ proto.onStanza = function (stanza) {
         this.callbacks[id].cb();
         delete this.callbacks[id];
     } else if (!this.xpath.match(stanza)) {
+        debug("unhandled stanza " + stanza);
         this.emit('error', "unhandled stanza " + stanza, stanza);
     }
 };

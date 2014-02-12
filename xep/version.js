@@ -1,3 +1,4 @@
+var debug = require('debug')('ls:xep:version');
 var util = require('./util');
 
 var NS = {
@@ -28,6 +29,7 @@ function Version(lightstream) {
 var proto = Version.prototype;
 
 proto.set = function (options) {
+    debug('set');
     options = options || {};
     var id = this.identity;
     ;["category","name"].forEach(function (k) { id[k] = options[k] || "" });
@@ -38,6 +40,7 @@ proto.set = function (options) {
 };
 
 proto.fetch = function (to, callback) {
+    debug('fetch');
     var id = util.id("version");
     var from = this.router.jid;
     if (this.disco && this.disco.cache && this.disco.cache[to]) {
@@ -54,6 +57,7 @@ proto.fetch = function (to, callback) {
 };
 
 proto.on_version = function (callback, err, stanza, items) {
+    debug('got ' + (err||'version'));
     if (err) return callback(err);
     var res = {}; items.forEach(function (item) {
         switch(item.name) {
@@ -69,6 +73,7 @@ proto.on_version = function (callback, err, stanza, items) {
 };
 
 proto.get_version = function (stanza, match) {
+    debug('requested');
     this._emit('version', stanza, match);
     var query = new this._xmpp.Iq({
         to:stanza.attrs.from,
