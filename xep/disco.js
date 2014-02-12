@@ -62,9 +62,8 @@ proto.info = function (to, callback) {
         .c("query", {xmlns:NS['disco#info']}).up(), {
         xpath:"self::iq[@type=result and @id='" + id + "']/info:query",
         ns:{info:NS['disco#info']},
-        callback:function (err, stanza) {
-            if (err) return callback(err, stanza);
-            var query = stanza.getChild("query");
+        callback:function (err, stanza, query) {
+            if (err) return callback(err, stanza, query);
             var res = {
                 identities:query.getChildren("identity").map(function (i) {return i.attrs}),
                 features:query.getChildren("feature").map(function (f) {return f.attrs.var}),
