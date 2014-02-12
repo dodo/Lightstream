@@ -7,11 +7,11 @@ function NodeXmppBackend(frontend) {
     xmpp = xmpp || require('node-xmpp-core');
     xmpp.Client = xmpp.Client || require('node-xmpp-client');
     this.frontend = frontend;
-    this.Presence = xmpp.Presence;
-    this.Message = xmpp.Message;
-    this.Stanza = xmpp.Stanza;
+    this.Presence = xmpp.Stanza.Presence;
+    this.Message = xmpp.Stanza.Message;
+    this.Stanza = xmpp.Stanza.Stanza;
+    this.Iq = xmpp.Stanza.Iq;
     this.JID = xmpp.JID;
-    this.Iq = xmpp.Iq;
 }
 var proto = NodeXmppBackend.prototype
 
@@ -27,7 +27,7 @@ proto.connect = function (options) {
     });
     client.on('stanza', frontend.onStanza);
     client.on('error',  frontend.onError);
-    ['online','offline','end'].forEach(function (event) {
+    ['online','offline','reconnect','disconnect','end'].forEach(function (event) {
         client.on(event, frontend.emit.bind(frontend, event));
     });
     return this;

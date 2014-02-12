@@ -39,6 +39,8 @@ proto.disconnect = function (options) {
     this.backend.disconnect(options);
     return this;
 };
+// mimick node-xmpp.Client
+proto.end = proto.disconnect;
 
 proto.send = function (stanza) {
     this.backend.send(stanza);
