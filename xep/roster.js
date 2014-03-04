@@ -1,6 +1,4 @@
-var EventEmitter = require('events').EventEmitter;
 var debug = require('debug')('ls:xep:roster');
-var inherits = require('util').inherits;
 var util = require('./util');
 
 var NS = {
@@ -18,23 +16,19 @@ var T = ["unavailable","subscribed","unsubscribed","subscribe","unsubscribe"];
 // XEP-0083
 
 exports.Roster = Roster;
-inherits(Roster, EventEmitter);
-function Roster(lightstream) {
-    Roster.super_.call(this);
-    this._xmpp = lightstream.xmpp;
-    this.router = lightstream.router;
-    lightstream.registerExtension('roster', this);
+function Roster(api) {
+    this.api = api;
     // initialize
-    this.router.match("self::roster:iq[@type=set]",
-                      {roster:NS.roster},
-                      this.update_items.bind(this));
-    this.router.match("self::presence[@type="+T.join(" or @type=")+" or not(@type)]",
-                      this.update_presence.bind(this));
-    this.router.match("self::message/roster:x/item",
-                      {roster:NS.rosterx},
-                      this.on_message.bind(this));
-    if (lightstream.extension['disco'])
-        lightstream.extension.disco.addFeature(NS.roster, NS.rosterx);
+    api.match("self::roster:iq[@type=set]",
+             {roster:NS.roster},
+              this.update_items.bind(this));
+    api.match("self::presence[@type="+T.join(" or @type=")+" or not(@type)]",
+              this.update_presence.bind(this));
+    api.match("self::message/roster:x/item",
+             {roster:NS.rosterx},
+              this.on_message.bind(this));
+    if (api.extension.disco)
+        api.extension.disco.addFeature(NS.roster, NS.rosterx);
 };
 Roster.NS = NS;
 var proto = Roster.prototype;
@@ -44,24 +38,25 @@ proto.get = function (callback) {
     debug('fetch roster');
     var id = util.id("roster");
     var id2 = util.id("request:roster");
-    var from = this.router.jid;
-    this.router.send(new this._xmpp.Iq({id:id,type:'get'})
+    var from = this.api.jid;
+    this.api.emit('get');
+    this.api.send(new this.api.xmpp.Iq({id:id, type:'get'})
         .c("query", {xmlns:NS.roster}).up(), {
         xpath:"self::iq[@type=result and @id='" + id +
               "']/roster:query/descendant-or-self::(self::query | self::item)",
         ns:{roster:NS.roster},
-        callback:this.get_roster.bind(this, callback),
+        callback:this.request.bind(this, callback),
     });
-//     this.router.send(new xmpp.Message({from:from,to:from.bare(),id:id2})
+//     this.api.send(new xmpp.Message({from:from,to:from.bare(),id:id2})
 //         .c("x", {xmlns:NS.rosterx}));
 
 };
 
 proto.getDelimiter = function (callback) {
     var id = util.id("roster:delimiter");
-    this.router.send(new this._xmpp.Iq({id:id,type:'get'})
-        .c("query", {xmlns:NS.private})
-        .c("roster",{xmlns:NS.delimiter})
+    this.api.send(new this.api.xmpp.Iq({id:id, type:'get'})
+        .c("query",  {xmlns:NS.private})
+        .c("roster", {xmlns:NS.delimiter})
         .up().up(), {
         xpath:"self::iq[@type=result and @id='"+id+"']/priv:query/del:roster",
         ns:{priv:NS.private,del:NS.delimiter},
@@ -69,38 +64,42 @@ proto.getDelimiter = function (callback) {
     });
 };
 
-proto.subscribe = function(jid, message) {
+proto.subscribe = function (jid, message) {
     debug('subscribe ' + jid);
-    var pres = new this._xmpp.Presence({to:jid, type:'subscribe'});
+    this.api.emit('subscribe', jid, message);
+    var pres = new this.api.xmpp.Presence({to:jid, type:'subscribe'});
     if (message && message != "") pres.c("status").t(message);
-    this.router.send(pres);
+    this.api.send(pres);
 };
 
-proto.unsubscribe = function(jid, message) {
+proto.unsubscribe = function (jid, message) {
     debug('unsubscribe ' + jid);
-    var pres = new this._xmpp.Presence({to:jid, type:'unsubscribe'});
+    this.api.emit('unsubscribe', jid, message);
+    var pres = new this.api.xmpp.Presence({to:jid, type:'unsubscribe'});
     if (message && message != "") pres.c("status").t(message);
-    this.router.send(pres);
+    this.api.send(pres);
 };
 
-proto.authorize = function(jid, message) {
+proto.authorize = function (jid, message) {
     debug('authorize ' + jid);
-    var pres = new this._xmpp.Presence({to:jid, type:'subscribed'});
+    this.api.emit('authorize', jid, message);
+    var pres = new this.api.xmpp.Presence({to:jid, type:'subscribed'});
     if (message && message != "") pres.c("status").t(message);
-    this.router.send(pres);
+    this.api.send(pres);
 };
 
-proto.unauthorize = function(jid, message) {
+proto.unauthorize = function (jid, message) {
     debug('unauthorize ' + jid);
-    var pres = new this._xmpp.Presence({to:jid, type:'unsubscribed'});
+    this.api.emit('unauthorize', jid, message);
+    var pres = new this.api.xmpp.Presence({to:jid, type:'unsubscribed'});
     if (message && message != "") pres.c("status").t(message);
-    this.router.send(pres);
+    this.api.send(pres);
 };
 
 
-proto.get_roster = function (callback, err, stanza, match) {
-    if (err || !match.length) return this.emit('error', err, stanza);
-    debug('get roster');
+proto.request = function (callback, err, stanza, match) {
+    if (err || !match.length) return this.api.emit('error', err, stanza);
+    debug('request');
     var needdelimiter = false;
     if (match[0].is('query')) return;
     var items = []; match.forEach(function (item) {
@@ -119,15 +118,17 @@ proto.get_roster = function (callback, err, stanza, match) {
     this.getDelimiter(function (err, stanza, match) {
         if (err || !match.length) return callback(items);
         var delimiter = match[0].getText();
-        debug('send roster')
-        return callback(items.map(function (item) {
+        debug('send roster');
+        items = items.map(function (item) {
             item.groups = item.groups.map(function (path) {
                 return delimiter ? path.split(delimiter) : [path];
             });
             return item;
-        }));
+        });
+        this.api.emit('request', items);
+        return callback(items);
 
-    });
+    }.bind(this));
 };
 
 proto.update_items = function (stanza, match) {
@@ -147,7 +148,8 @@ proto.update_presence = function (stanza) {
         case undefined: event = "online"; break;
         default: break;
     }
-    if (event) this.emit(event, new this._xmpp.JID(stanza.attrs.from), stanza);
+    if (event)
+        this.api.emit(event, new this.api.xmpp.JID(stanza.attrs.from), stanza);
 };
 
 proto.on_message = function (stanza, items) {

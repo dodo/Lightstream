@@ -1,4 +1,4 @@
-var __slice = [].slice;
+var __slice = Array.prototype.slice;
 var EventEmitter = require('events').EventEmitter;
 var inherits = require('util').inherits;
 var debug = require('debug')('ls:router');

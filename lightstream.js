@@ -3,6 +3,7 @@ var inherits = require('util').inherits;
 var debug = require('debug')('ls:client');
 var extend = require('extend');
 var Router = require('./router').Router;
+var Capsule = require('./lib/capsule');
 
 
 Lightstream.xmpp = {
@@ -34,12 +35,14 @@ proto.connect = function (jid, password, options) {
     debug('connect');
     options = extend({jid:jid, password:password}, options || {});
     this.backend.connect(options);
+    this.emit('connect', jid);
     return this;
 };
 
 proto.disconnect = function (options) {
     debug('disconnect');
     this.backend.disconnect(options);
+    this.emit('disconnect', jid);
     return this;
 };
 // mimick node-xmpp.Client
@@ -50,10 +53,12 @@ proto.send = function (stanza) {
     return this;
 };
 
-proto.use = function (/*extensions…*/) {
-    Array.prototype.forEach.call(arguments, function (Extension) {
-        debug('use ' + Extension.name);
-        new Extension(this); // extension should register itself
+proto.use = function (arg0/*extensions…*/) {
+    var args = arguments.length === 1 && Array.isArray(arg0) ? arg0 : arguments;
+    Array.prototype.forEach.call(args, function (Extension) {
+        var name = Extension.name.toLowerCase();
+        debug('use ' + name);
+        this.registerExtension(name, new Extension(new Capsule(this, name)));
     }.bind(this));
     return this;
 }
@@ -64,17 +69,19 @@ proto.registerExtension = function (name, extension) {
         console.warn("Extension '%s' exists allready.", name);
         return this;
     }
+    this.emit('register extension', extension);
     return (this.extension[name] = extension);
 };
 
 proto.registerBackend = function (Backend) {
-    debug('capsule ' + Backend.name);
+    debug('reference ' + Backend.name);
     var backend = new Backend(this);
     this.xmpp.Presence = backend.Presence;
     this.xmpp.Message = backend.Message;
     this.xmpp.Stanza = backend.Stanza;
     this.xmpp.JID = backend.JID;
     this.xmpp.Iq = backend.Iq;
+    this.emit('register backend', backend);
     return (this.backend = backend);
 };
 
