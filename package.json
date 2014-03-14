@@ -7,9 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-      "debug": "*",
+      "debug": "~0.7.4",
       "extend": "*",
-      "ltx-xpath":"*"
+      "ltx-xpath":">= 0.1.0"
   },
   "repository": "",
   "author": "dodo",

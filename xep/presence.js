@@ -8,7 +8,7 @@ exports.Presence = Presence;
 function Presence(api) {
     this.api = api;
     // initialize
-    api.match("self::presence", this.presence.bind(this));
+    api.match("/presence", this.presence.bind(this));
 };
 
 var proto = Presence.prototype;

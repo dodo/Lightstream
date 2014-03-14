@@ -22,7 +22,7 @@ function Disco(api) {
     // initialize
     this.identities = identities.slice();
     this.features = features.slice();
-    api.match("self::iq[@type=get]/info:query",
+    api.match("/iq[@type=get]/info:query",
              {info:NS['disco#info']},
               this.query.bind(this));
 };
@@ -61,7 +61,7 @@ proto.info = function (to, callback) {
     var id = util.id("info");
     this.api.send(new this.api.xmpp.Iq({to:to,id:id,type:'get'})
         .c("query", {xmlns:NS['disco#info']}).up(), {
-        xpath:"self::iq[@type=result and @id='" + id + "']/info:query",
+        xpath:"/iq[@type=result and @id='" + id + "']/info:query",
         ns:{info:NS['disco#info']},
         callback:function (err, stanza, query) {
             if (err) return callback(err, stanza, query);

@@ -14,7 +14,7 @@ function Version(api) {
     // initialize
     this.identity = {};
     this.set();
-    api.match("self::iq[@type=get]/version:query",
+    api.match("/iq[@type=get]/version:query",
                  {version:NS.version},
                  this.request.bind(this));
     if (api.extension.disco) {
@@ -46,7 +46,7 @@ proto.fetch = function (to, callback) {
         return callback("doesnt support " + NS.version + " :(");
     this.api.send(new this.api.xmpp.Iq({from:from,to:to,id:id,type:'get'})
         .c("query", {xmlns:NS.version}).up(), {
-        xpath:"self::iq[@type=result and @id='"+id+"']/version:query/child::*",
+        xpath:"/iq[@type=result and @id='"+id+"']/version:query/child::*",
         ns:{version:NS.version},
         callback:this.on_version.bind(this, callback),
     });

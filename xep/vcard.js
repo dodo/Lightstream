@@ -19,7 +19,7 @@ function VCard(api) {
     function onlistener(event, listener) {
         if (event !== 'vcard.update') return;
         api.removeListener('newListener', onlistener);
-        api.match("self::presence[not(@type)]/child::vcupdate:x",
+        api.match("/presence[not(@type)]/child::vcupdate:x",
                  {vcupdate:NS.update},
                   api.emit.bind(api, 'update'));
     }
@@ -41,8 +41,8 @@ proto.get = function (to, callback) {
     if (to) to = to.bare();
     this.api.send(new this.api.xmpp.Iq({to:to,id:id,type:'get',from:this.api.jid})
         .c("vCard", {xmlns:NS.vcard}).up(), {
-        xpath:"self::iq[@id='" + id + "']/vc:vCard/child::* | " +
-              "self::iq[@id='" + id + "' and @type=error]/error/child::*",
+        xpath:"/iq[@id='" + id + "']/vc:vCard/child::* | " +
+              "/iq[@id='" + id + "' and @type=error]/error/child::*",
         ns:{vc:NS.vcard},
         callback:function (err, stanza, match) {
             if (!err && stanza.attrs.type === "error")

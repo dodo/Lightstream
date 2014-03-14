@@ -19,12 +19,12 @@ exports.Roster = Roster;
 function Roster(api) {
     this.api = api;
     // initialize
-    api.match("self::roster:iq[@type=set]",
+    api.match("/roster:iq[@type=set]",
              {roster:NS.roster},
               this.update_items.bind(this));
-    api.match("self::presence[@type="+T.join(" or @type=")+" or not(@type)]",
+    api.match("/presence[@type="+T.join(" or @type=")+" or not(@type)]",
               this.update_presence.bind(this));
-    api.match("self::message/roster:x/item",
+    api.match("/message/roster:x/item",
              {roster:NS.rosterx},
               this.on_message.bind(this));
     if (api.extension.disco)
@@ -42,7 +42,7 @@ proto.get = function (callback) {
     this.api.emit('get');
     this.api.send(new this.api.xmpp.Iq({id:id, type:'get'})
         .c("query", {xmlns:NS.roster}).up(), {
-        xpath:"self::iq[@type=result and @id='" + id +
+        xpath:"/iq[@type=result and @id='" + id +
               "']/roster:query/descendant-or-self::(self::query | self::item)",
         ns:{roster:NS.roster},
         callback:this.request.bind(this, callback),
@@ -58,7 +58,7 @@ proto.getDelimiter = function (callback) {
         .c("query",  {xmlns:NS.private})
         .c("roster", {xmlns:NS.delimiter})
         .up().up(), {
-        xpath:"self::iq[@type=result and @id='"+id+"']/priv:query/del:roster",
+        xpath:"/iq[@type=result and @id='"+id+"']/priv:query/del:roster",
         ns:{priv:NS.private,del:NS.delimiter},
         callback:callback,
     });

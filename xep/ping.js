@@ -12,7 +12,7 @@ exports.Ping = Ping;
 function Ping(api) {
     this.api = api;
     // initialize
-    api.match("self::iq/urn:ping", {urn:NS.ping}, this.pong.bind(this));
+    api.match("/iq/urn:ping", {urn:NS.ping}, this.pong.bind(this));
     if (api.extension['disco'])
         api.extension.disco.addFeature(NS.ping);
 };
