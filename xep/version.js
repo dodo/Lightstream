@@ -9,7 +9,7 @@ exports.NS = NS;
 // XEP-0092
 
 exports.Version = Version;
-function Version(pai) {
+function Version(api) {
     this.api = api;
     // initialize
     this.identity = {};
