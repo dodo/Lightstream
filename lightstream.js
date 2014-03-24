@@ -41,6 +41,7 @@ proto.connect = function (jid, password, options) {
 
 proto.disconnect = function (options) {
     debug('disconnect');
+    var jid = this.jid;
     this.backend.disconnect(options);
     this.emit('disconnect', jid);
     return this;
