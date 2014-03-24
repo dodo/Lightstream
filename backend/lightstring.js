@@ -30,7 +30,7 @@ proto.connect = function (options) {
 
 proto.disconnect = function (options) {
     if (this.connection) this.connection.disconnect();
-    delete this.client;
+    delete this.connection;
     return this;
 };
 
