@@ -12,16 +12,28 @@ var lightstream = new Lightstream({
   .connect(process.argv[2], process.argv[3]);
 
 
-lightstream.on('ping', function (stanza) {
-   console.log("received a ping", stanza);
+lightstream.on('ping.receive', function (stanza) {
+   console.log("received a ping  " + stanza);
 });
 
-lightstream.on('info', function (stanza) {
-   console.log("received a info disco query", stanza);
+lightstream.on('disco.info', function (stanza) {
+   console.log("received a info disco query  " + stanza);
 });
 
-lightstream.on('presence', function (stanza) {
-   console.log("received a presence", stanza);
+lightstream.on('presence.receive', function (stanza) {
+   console.log("received a presence  " + stanza);
+});
+
+lightstream.on('message.receive', function (stanza) {
+   console.log("received a message  " + stanza);
+    if (stanza.attrs.type === 'error') return; // never reply to errors
+    var body = stanza.getChildText('body');
+    if (body && body.length) stanza.body = body;
+    // Swap addresses...
+    stanza.attrs.to = stanza.attrs.from;
+    delete stanza.attrs.from;
+    // and send back.
+    lightstream.extension.message.send(stanza.attrs);
 });
 
 
@@ -32,14 +44,4 @@ lightstream.on('online', function () {
         status:"Happily echoing your <message/> stanzas",
         from:lightstream.backend.client.jid,
     });
-});
-
-lightstream.router.match("self::message", function (stanza) {
-    if (stanza.attrs.type === 'error') return; // never reply to errors
-    console.log(stanza.toString())
-    // Swap addresses...
-    stanza.attrs.to = stanza.attrs.from;
-    delete stanza.attrs.from;
-    // and send back.
-    lightstream.send(stanza);
 });

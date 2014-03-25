@@ -22,7 +22,7 @@ proto.match = function (xpath/*[*/, namespaces/*]*/, callback) {
     return this;
 };
 
-proto.send = function (stanza/*[*/, options) {
+proto.send = function (stanza, options) {
     if (options) {
         var callback;
         if (typeof options !== 'function') {
