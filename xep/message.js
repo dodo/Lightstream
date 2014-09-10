@@ -12,14 +12,15 @@ function Message(api) {
 var proto = Message.prototype;
 
 proto.send = function (opts) {
+    opts = opts || {};
     var attrs = {};
-    if (opts && opts.id) attrs.id = opts.id;
-    if (opts && opts.to) attrs.to = opts.to;
-    if (opts && opts.from) attrs.from = opts.from;
-    if (opts && opts.type) attrs.type = opts.type;
-    if (opts && opts.lang) attrs['xml:lang'] = opts.lang;
+    attrs.id = opts.id || util.id(opts.type || "message");;
+    if (opts.to) attrs.to = opts.to;
+    if (opts.from) attrs.from = opts.from;
+    if (opts.type) attrs.type = opts.type;
+    if (opts.lang) attrs['xml:lang'] = opts.lang;
     var message = new this.api.xmpp.Message(attrs);
-    if (opts && opts.body) message.c('body').t(opts.body);
+    if (opts.body) message.c('body').t(opts.body);
     this.api.emit('send', message);
     debug("send: " + message)
     this.api.send(message);
