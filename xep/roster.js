@@ -19,7 +19,7 @@ exports.Roster = Roster;
 function Roster(api) {
     this.api = api;
     // initialize
-    api.match("/roster:iq[@type=set]",
+    api.match("/iq[@type=set]/roster:query",
              {roster:NS.roster},
               this.update_items.bind(this));
     api.match("/presence[@type="+T.join(" or @type=")+" or not(@type)]",
@@ -42,8 +42,7 @@ proto.get = function (callback) {
     this.api.emit('get');
     this.api.send(new this.api.xmpp.Iq({id:id, type:'get'})
         .c("query", {xmlns:NS.roster}).up(), {
-        xpath:"/iq[@type=result and @id='" + id +
-              "']/roster:query/descendant-or-self::(self::query | self::item)",
+        xpath:"/iq[@type=result and @id='" + id + "']/roster:query",
         ns:{roster:NS.roster},
         callback:this.request.bind(this, callback),
     });
@@ -97,12 +96,12 @@ proto.unauthorize = function (jid, message) {
 };
 
 
-proto.request = function (callback, err, stanza, match) {
-    if (err || !match.length) return this.api.emit('error', err, stanza);
-    debug('request');
+proto.parse_items = function (match, callback) {
+    var query = match[0];
+    callback = callback.bind(this);
+    if (!query.children.length) return callback([]);
     var needdelimiter = false;
-    if (match[0].is('query')) return;
-    var items = []; match.forEach(function (item) {
+    var items = []; query.children.forEach(function (item) {
         var groups = item.getChildren("group").map(function (group) {
             return group && group.getText ? group.getText() : "";
         });
@@ -118,21 +117,33 @@ proto.request = function (callback, err, stanza, match) {
     this.getDelimiter(function (err, stanza, match) {
         if (err || !match.length) return callback(items);
         var delimiter = match[0].getText();
-        debug('send roster');
         items = items.map(function (item) {
             item.groups = item.groups.map(function (path) {
                 return delimiter ? path.split(delimiter) : [path];
             });
             return item;
         });
-        this.api.emit('request', items);
         return callback(items);
 
-    }.bind(this));
+    });
+};
+
+proto.request = function (callback, err, stanza, match) {
+    if (err || !match.length) return this.api.emit('error', err, stanza);
+    debug('request', match);
+    this.parse_items(match, function (items) {
+        debug('send roster');
+        this.api.emit('request', items);
+        return callback && callback(items) || items;
+    });
 };
 
 proto.update_items = function (stanza, match) {
     debug("update_items: " + stanza.toString() + " " + match.toString());
+    if (!match.length) return;
+    this.parse_items(match, function (items) {
+        this.api.emit('itemsUpdate', items, stanza);
+    });
 };
 
 proto.update_presence = function (stanza) {
