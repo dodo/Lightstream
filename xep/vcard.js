@@ -35,7 +35,8 @@ proto.setPhotoHash = function (hash) {
 
 proto.get = function (to, callback) {
     debug('get');
-    if (!callback) {callback = to; to = undefined;}
+    if (typeof to === 'function') {callback = to; to = undefined;}
+    callback = callback || this.api.emit.bind(this.api, 'get');
     var id = util.id("vcard:get");
     if (to && typeof(to) === 'string') to = new this.api.xmpp.JID(to);
     if (to) to = to.bare();
@@ -58,6 +59,7 @@ proto.set = function (to, vcard, callback) {
     debug('set');
     if (!callback) {callback = vcard; vcard = to; to = undefined;}
     if (!callback) {callback = vcard; vcard = undefined;}
+    callback = callback || this.api.emit.bind(this.api, 'set');
     var id = util.id("vcard:set");
     if (to) to = (new this.api.xmpp.JID(to)).bare();
     var iq = new this.api.xmpp.Iq({to:to,id:id,type:'set',from:this.api.jid})
