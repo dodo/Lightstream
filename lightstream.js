@@ -27,6 +27,7 @@ function Lightstream(options) {
     this.router = new Router(this, options.timeout);
     this.onStanza = this.router.onStanza;
     this.onError = this.emit.bind(this, 'error');
+    this.router.on('error', this.onError);
 }
 var proto = Lightstream.prototype;
 
