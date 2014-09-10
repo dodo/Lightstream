@@ -19,12 +19,14 @@ proto.connect = function (options) {
     if (this.client) return this;
     var frontend = this.frontend;
     var client = this.client = new xmpp.Client(options);
-    // FIXME
-    Object.defineProperty(frontend.router, 'jid', {
-        get: function() {
-            return client.jid;
-        }
-    });
+    if (!frontend.router.jid) {
+        var that = this;
+        Object.defineProperty(frontend.router, 'jid', {
+            get: function() {
+                return that.client.jid;
+            }
+        });
+    }
     client.on('stanza', frontend.onStanza);
     client.on('error',  frontend.onError);
     ['online','offline','reconnect','disconnect','end'].forEach(function (event) {
