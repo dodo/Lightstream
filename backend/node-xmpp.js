@@ -9,6 +9,7 @@ function NodeXmppBackend(frontend) {
     this.frontend = frontend;
     this.Presence = xmpp.Stanza.Presence;
     this.Message = xmpp.Stanza.Message;
+    this.Element = xmpp.ltx.Element;
     this.Stanza = xmpp.Stanza.Stanza;
     this.Iq = xmpp.Stanza.Iq;
     this.JID = xmpp.JID;

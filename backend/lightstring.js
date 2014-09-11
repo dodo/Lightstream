@@ -12,6 +12,7 @@ proto.Presence = function (attrs) {xmpp.Element.call(this, 'presence', attrs)};
 proto.Message  = function (attrs) {xmpp.Element.call(this, 'message',  attrs)};
 proto.Iq       = function (attrs) {xmpp.Element.call(this, 'iq',       attrs)};
 proto.Presence.prototype = proto.Message.prototype = proto.Iq.prototype = xmpp.Element.prototype;
+proto.Element = xmpp.Element;
 proto.Stanza = xmpp.Element;
 proto.JID = xmpp.JID;
 

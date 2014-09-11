@@ -13,6 +13,7 @@ proto.Presence = function (attrs) {xmpp.Builder.call(this, 'presence', attrs)};
 proto.Message  = function (attrs) {xmpp.Builder.call(this, 'message',  attrs)};
 proto.Iq       = function (attrs) {xmpp.Builder.call(this, 'iq',       attrs)};
 proto.Presence.prototype = proto.Message.prototype = proto.Iq.prototype = xmpp.Builder.prototype;
+proto.Element = xmpp.Builder;
 proto.Stanza = xmpp.Builder;
 proto.JID = xmpp.JID; // FIXME
 
