@@ -7,11 +7,11 @@ function NodeXmppBackend(frontend) {
     xmpp = xmpp || require('node-xmpp-core');
     xmpp.Client = xmpp.Client || require('node-xmpp-client');
     this.frontend = frontend;
-    this.Presence = xmpp.Stanza.Presence;
-    this.Message = xmpp.Stanza.Message;
-    this.Element = xmpp.ltx.Element;
-    this.Stanza = xmpp.Stanza.Stanza;
-    this.Iq = xmpp.Stanza.Iq;
+    this.Presence = xmpp.Presence;
+    this.Message = xmpp.Message;
+    this.Element = xmpp.Element;
+    this.Stanza = xmpp.Stanza;
+    this.Iq = xmpp.Iq;
     this.JID = xmpp.JID;
 }
 var proto = NodeXmppBackend.prototype
