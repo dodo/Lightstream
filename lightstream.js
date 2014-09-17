@@ -80,6 +80,7 @@ proto.registerBackend = function (Backend) {
     var backend = new Backend(this);
     this.xmpp.Presence = backend.Presence;
     this.xmpp.Message = backend.Message;
+    this.xmpp.Element = backend.Element;
     this.xmpp.Stanza = backend.Stanza;
     this.xmpp.JID = backend.JID;
     this.xmpp.Iq = backend.Iq;
