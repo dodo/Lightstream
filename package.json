@@ -8,6 +8,12 @@
       "extend": "*",
       "ltx-xpath":">= 0.1.0"
   },
+  "optionalDependencies": {
+      "chrome-xmpp": "~0.1.0",
+      "node-xmpp-core": "~1.0.0",
+      "node-xmpp-client": "~1.0.0",
+      "strophejs": "1.1.3"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/dodo/lightstream.git"
