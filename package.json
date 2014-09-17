@@ -6,7 +6,7 @@
   "dependencies": {
       "debug": "~0.7.4",
       "extend": "*",
-      "ltx-xpath":">= 0.1.0"
+      "ltx-xpath":"~0.1.2"
   },
   "optionalDependencies": {
       "chrome-xmpp": "~0.1.0",
